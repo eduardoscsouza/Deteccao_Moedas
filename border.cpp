@@ -4,9 +4,9 @@
 #include <string>
 #include <opencv2/opencv.hpp>
 
-#define RESIZE_WIDTH 60.0
+#define RESIZE_WIDTH 240.0
 #define NEIGH_TYPE 4
-#define DIF_THRES 50
+#define DIF_THRES 20
 
 using namespace std;
 using namespace cv; 
@@ -33,12 +33,11 @@ void dfs(Mat& im, Mat& mask, int i, int j, char movement[NEIGH_TYPE][2], int reg
 
 	imshow("grafo", mask);
 	waitKey(10);
-
 	int aux, nextI, nextJ;
 	for (aux=0; aux<NEIGH_TYPE; aux++){
 		nextI=i+movement[aux][0]; nextJ=j+movement[aux][1];
-		if (valid(nextI, nextJ, im.rows, im.cols) && sumDif(im, i, j, nextI, nextJ) < DIF_THRES
-			&& mask.at<unsigned char>(nextI, nextJ)==0) dfs(im, mask, nextI, nextJ, movement, regionValue);
+		if (valid(nextI, nextJ, im.rows, im.cols*im.channels()) && sumDif(im, i, j, nextI, nextJ) < DIF_THRES
+			&& mask.at<unsigned char>(nextI, nextJ)!=regionValue) dfs(im, mask, nextI, nextJ, movement, regionValue);
 	}
 }
 
@@ -53,7 +52,7 @@ int getStartingPos(Mat& mask, int * i, int * j)
 
 Mat generateMask(Mat& im, int * nRegions)
 {
-	Mat filtered, mask = Mat::zeros(im.rows, im.cols, CV_8UC1);
+	Mat filtered, mask = Mat::zeros(im.rows, im.cols, CV_8UC3);
 	bilateralFilter(im, filtered, 15, 80, 80, BORDER_DEFAULT);
 
 	char movement[NEIGH_TYPE][2]
@@ -64,13 +63,17 @@ Mat generateMask(Mat& im, int * nRegions)
 		{-1, -1}
 	};
 
+	dfs(filtered, mask, 0, 0, movement, 255);
+
+	/*
 	*nRegions=50;
 	int startingI=0, startingJ=0;
 	while(getStartingPos(mask, &startingI, &startingJ)) {
 		dfs(filtered, mask, startingI, startingJ, movement, *nRegions);
 		(*nRegions)+=50;
-	}
+	}*/
 
+	imwrite("mascara.jpg", mask);
 	return mask;
 }
 
