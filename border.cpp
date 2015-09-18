@@ -4,13 +4,12 @@
 #include <string>
 #include <opencv2/opencv.hpp>
 
-#define RESIZE_WIDTH 240.0
+#define RESIZE_WIDTH 200
 #define NEIGH_TYPE 4
-#define DIF_THRES 20
+#define DIF_THRES 15
 
 using namespace std;
 using namespace cv; 
-
 
 int sumDif(Mat& im, int iA, int jA, int iB, int jB)
 {
@@ -28,11 +27,11 @@ int valid(int i, int j, int height, int width)
 
 void dfs(Mat& im, Mat& mask, int i, int j, char movement[NEIGH_TYPE][2], int regionValue)
 {
-	if (mask.at<unsigned char>(i, j)==regionValue) return;
 	mask.at<unsigned char>(i, j)=regionValue;
+	
+	//imshow("grafo", mask);
+	//waitKey(10);
 
-	imshow("grafo", mask);
-	waitKey(10);
 	int aux, nextI, nextJ;
 	for (aux=0; aux<NEIGH_TYPE; aux++){
 		nextI=i+movement[aux][0]; nextJ=j+movement[aux][1];
@@ -41,16 +40,7 @@ void dfs(Mat& im, Mat& mask, int i, int j, char movement[NEIGH_TYPE][2], int reg
 	}
 }
 
-int getStartingPos(Mat& mask, int * i, int * j)
-{
-	for (NULL; *i<mask.rows; (*i)++){
-		for(NULL; *j<mask.cols; (*j)++) if (mask.at<unsigned char>(*i, *j)==0) return 1;
-		*j=0;
-	}
-	return 0;
-}
-
-Mat generateMask(Mat& im, int * nRegions)
+Mat generateMask(Mat& im)
 {
 	Mat filtered, mask = Mat::zeros(im.rows, im.cols, CV_8UC3);
 	bilateralFilter(im, filtered, 15, 80, 80, BORDER_DEFAULT);
@@ -65,15 +55,7 @@ Mat generateMask(Mat& im, int * nRegions)
 
 	dfs(filtered, mask, 0, 0, movement, 255);
 
-	/*
-	*nRegions=50;
-	int startingI=0, startingJ=0;
-	while(getStartingPos(mask, &startingI, &startingJ)) {
-		dfs(filtered, mask, startingI, startingJ, movement, *nRegions);
-		(*nRegions)+=50;
-	}*/
-
-	imwrite("mascara.jpg", mask);
+	//imwrite("mascara.jpg", mask);
 	return mask;
 }
 
@@ -88,11 +70,9 @@ int main()
 		cout<<"Unnable to open file!"<<endl;
 		return -1;
 	}
-	resize(im, im, Size((RESIZE_WIDTH/im.rows) * im.cols, RESIZE_WIDTH));
+	resize(im, im, Size(RESIZE_WIDTH*((double)im.cols/im.rows), RESIZE_WIDTH));
 
-
-	int nRegions;
-	Mat mask = generateMask(im, &nRegions);
+	Mat mask = generateMask(im);
 
 	return 0;
 }
