@@ -1,8 +1,12 @@
 #include "mask.hpp"
 
+#define NEIGH_TYPE 4
+#define STD_MAX 255
+
+
 double euclDis(Mat& im, int iA, int jA, int iB, int jB)
 {
-	int sumDif = 0;
+	double sumDif = 0;
 	for (int k=0; k<im.channels(); k++)
 		sumDif+= ((im.at<uchar>(iA, jA+k))-(im.at<uchar>(iB, jB+k))) *
 			    ((im.at<uchar>(iA, jA+k))-(im.at<uchar>(iB, jB+k)));
@@ -42,7 +46,7 @@ void dfs(Mat& im, Mat& mask, int i, int j, uchar ** movement, double threshold)
 
 
 
-Mat generateMask(Mat& im, int threshold)
+Mat generateMask(Mat& im, double threshold)
 {
 	Mat filtered, mask;
 	bilateralFilter(im, filtered, 12, 60, 60, BORDER_DEFAULT);
@@ -68,6 +72,8 @@ Mat generateMask(Mat& im, int threshold)
 
 void applyMask(Mat& im, Mat& mask)
 {
-	cvtColor(mask, mask, CV_GRAY2RGB);
-	multiply(im, mask, im);
+	for (int i=0; i<im.rows; i++)
+		for (int j=0; j<im.cols*im.channels(); j++)
+			if (mask.at<uchar>(i, j)==0)
+				im.at<uchar>(i, j)=0;
 }
