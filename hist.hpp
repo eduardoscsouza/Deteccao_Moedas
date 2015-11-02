@@ -4,6 +4,11 @@
 
 #include <opencv2/opencv.hpp>
 
+#include <string.h>
+#include <stdlib.h>
+
+#include "utils.hpp"
+
 typedef unsigned char uchar;
 typedef unsigned long int ulong;
 typedef struct{
@@ -11,12 +16,19 @@ typedef struct{
 	ulong total;
 }Histogram;
 
-
 using namespace cv;
 
 Histogram * colourHist(Mat&, Mat&, int);
-void printHist(Histogram *, int, int);
 
+int validPos(int, int, int, int);
+uchar * createLookup();
+uchar calculateCel(Mat&, int, int, char**);
+Histogram * textureHist(Mat&, Mat&, int);
+
+Histogram * initHist(ulong);
+void printHist(Histogram *, int, int);
+void freeHist(Histogram *);
+Histogram * concHist(Histogram *, Histogram *);
 
 #endif
 

@@ -26,6 +26,7 @@ void useCamera(int resizeWidth)
 	}
 }
 
+
 int main()
 {
 	int resizeWidth;
@@ -37,11 +38,17 @@ int main()
 	
 	Mat mask = generateMask(im, STD_THRES);
 
-	Histogram * hist = colourHist(im, mask, STD_MAX);
+	Histogram * colHist = colourHist(im, mask, STD_MAX);
+	Histogram * texHist = textureHist(im, mask, STD_MAX);
+	Histogram * hist = concHist(colHist, texHist);
+	freeHist(colHist);
+	freeHist(texHist);
+
 	printHist(hist, 500, 900);
 
+	freeHist(hist);
+
 	waitKey(0);
-	free(hist);
 	return 0;
 }
 
