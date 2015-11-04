@@ -3,7 +3,6 @@
 
 
 #include <opencv2/opencv.hpp>
-
 #include <string.h>
 #include <stdlib.h>
 
@@ -12,8 +11,8 @@
 typedef unsigned char uchar;
 typedef unsigned long int ulong;
 typedef struct{
-	double * elements;
 	ulong total;
+	double * elements;
 }Histogram;
 
 using namespace cv;

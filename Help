@@ -1,0 +1,24 @@
+Formato do aqrivo dataBase.dat:
+
+	ulong         (hist->total)    [8 bytes]
+	double [total] (hist->elements) [8*total bytes]
+	int            (classe)         [4 bytes]
+
+Formato do identificador "classe"
+	[0/1->cara/coroa][0/1->velha/nova][DDD->valor]
+
+	Exemplo: 00005->Moeda de cinco centavos velha(cara)
+		    11100->Moeda de 1 real nova(coroa)
+
+Formato do dado no KNN
+	ulong         (hist->total)    [8 bytes]
+	double [total] (hist->elements) [8*total bytes]
+	int            (classe)         [4 bytes]
+	double         (distancia)      [8 bytes]
+
+Ordem do vetor de probabilidades
+cara  velha  5
+coroa velha 5
+cara  nova  5
+coroa nova 5 
+

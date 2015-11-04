@@ -42,7 +42,7 @@ void dfs(Mat& im, Mat& mask, int i, int j, char ** movement, double threshold)
 Mat generateMask(Mat& im, double threshold)
 {
 	Mat filtered, mask;
-	bilateralFilter(im, filtered, 12, 60, 60, BORDER_DEFAULT);
+	bilateralFilter(im, filtered, 12, 120, 120, BORDER_DEFAULT);
 	mask = Mat(filtered.rows, filtered.cols, CV_8UC3);
 	mask.setTo(cv::Scalar(STD_MAX, STD_MAX, STD_MAX));
 
