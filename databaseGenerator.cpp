@@ -34,7 +34,7 @@ int main()
 	Mat im, mask;
 	Histogram *colHist, *texHist, *hist; 
 	while (fscanf(input, "%s%d", auxString, &classe)!=EOF){
-		printf("%s\n", auxString);
+		printf("%s\t%05d\n", auxString, classe);
 		im = imread(auxString, CV_LOAD_IMAGE_COLOR);
 		resize(im, im, Size(resizeWidth*(((double)im.cols)/im.rows), resizeWidth));
 

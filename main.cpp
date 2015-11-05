@@ -2,6 +2,8 @@
 #include <string>
 #include <opencv2/opencv.hpp>
 
+#include <stdio.h>
+
 #include "mask.hpp"
 #include "hist.hpp"
 #include "knn.hpp"
@@ -69,15 +71,29 @@ int main()
 	freeHist(colHist);
 	freeHist(texHist);
 
+	FILE * rec = fopen("log.txt", "a");
+	if (rec==NULL) printf("Can't open log.txt!\n");
+	fprintf(rec, "Arquivo: %s\n", fileName.c_str());
+
 	int dataCount;
 	void ** database = getDatabase(&dataCount);
-	getClass(database, dataCount, hist, STD_KNN);
+	int classe = getClass(database, dataCount, hist, STD_KNN);
+	fprintf(rec, "Resultado: %d (%d centavos %s [%s])\n", classe, classe%1000,
+	(classe/1000)%10 ? "Nova" : "Antiga",
+	classe/10000 ? "Coroa" : "Cara");
 
 	//ver a vizinhanca
-	for (int i=STD_KNN*2; i>=0; i--)
+	fprintf(rec, "Vizinhanca:\n");
+	for (int i=STD_KNN*2; i>=0; i--){
 		printf("%lf %05d\n",
 		*((double*)(database[i]+sizeof(ulong)+(sizeof(double)*(hist->total)+sizeof(int)))),
 		(*((int*)(database[i]+sizeof(ulong)+(sizeof(double)*(hist->total))))));
+
+		fprintf(rec, "%lf %05d\n",
+		*((double*)(database[i]+sizeof(ulong)+(sizeof(double)*(hist->total)+sizeof(int)))),
+		(*((int*)(database[i]+sizeof(ulong)+(sizeof(double)*(hist->total))))));
+	}
+	fprintf(rec, "\n\n");
 	
 	/*
 	calcDists(database, dataCount, hist);
@@ -87,6 +103,7 @@ int main()
 	*/
 
 	freeHist(hist);
+	fclose(rec);
 
 	applyMask(im, mask);
 	imshow(fileName, im);
